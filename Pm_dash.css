@@ -1,0 +1,260 @@
+/* CSS Variables & Core Styles */
+:root {
+  --bg-color: #020617;
+  --text-main: #ffffff;
+  --text-sub: #94a3b8;
+  --card-border: rgba(255, 255, 255, 0.2);
+  --header-bg: rgba(15, 23, 42, 0.8);
+  --clock-text: #ffffff;
+
+  /* Dynamic PM2.5 Gradients */
+  --lv1-blue: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.4) 0%,
+    rgba(37, 99, 235, 0.1) 100%
+  );
+  --lv2-green: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.4) 0%,
+    rgba(16, 185, 129, 0.1) 100%
+  );
+  --lv3-yellow: linear-gradient(
+    135deg,
+    rgba(234, 179, 8, 0.4) 0%,
+    rgba(234, 179, 8, 0.1) 100%
+  );
+  --lv4-orange: linear-gradient(
+    135deg,
+    rgba(249, 115, 22, 0.4) 0%,
+    rgba(249, 115, 22, 0.1) 100%
+  );
+  --lv5-red: linear-gradient(
+    135deg,
+    rgba(220, 38, 38, 0.4) 0%,
+    rgba(220, 38, 38, 0.1) 100%
+  );
+
+  --humid-grad: linear-gradient(
+    135deg,
+    rgba(79, 70, 229, 0.35) 0%,
+    rgba(79, 70, 229, 0.05) 100%
+  );
+  --temp-grad: linear-gradient(
+    135deg,
+    rgba(234, 88, 12, 0.35) 0%,
+    rgba(234, 88, 12, 0.05) 100%
+  );
+  --energy-grad: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.35) 0%,
+    rgba(37, 99, 235, 0.05) 100%
+  );
+  --carbon-grad: linear-gradient(
+    135deg,
+    rgba(5, 150, 105, 0.35) 0%,
+    rgba(5, 150, 105, 0.05) 100%
+  );
+  --unit-grad: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.35) 0%,
+    rgba(14, 165, 233, 0.05) 100%
+  );
+}
+
+[data-theme="light"] {
+  --bg-color: #f1f5f9;
+  --text-main: #0f172a;
+  --text-sub: #475569;
+  --card-border: rgba(15, 23, 42, 0.12);
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --clock-text: #1e293b;
+}
+
+body {
+  font-family: "Prompt", sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  transition: all 0.4s ease;
+}
+
+.dashboard-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.glass-card {
+  border-radius: 2.5rem;
+  border: 1.5px solid var(--card-border);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Card Border Colors Based on Level */
+.border-lv1 {
+  border-left: 12px solid #2563eb;
+}
+.border-lv2 {
+  border-left: 12px solid #10b981;
+}
+.border-lv3 {
+  border-left: 12px solid #fbbf24;
+}
+.border-lv4 {
+  border-left: 12px solid #f97316;
+}
+.border-lv5 {
+  border-left: 12px solid #dc2626;
+}
+
+/* Top Borders for small cards */
+.border-t-lv1 {
+  border-top: 6px solid #2563eb;
+}
+.border-t-lv2 {
+  border-top: 6px solid #10b981;
+}
+.border-t-lv3 {
+  border-top: 6px solid #fbbf24;
+}
+.border-t-lv4 {
+  border-top: 6px solid #f97316;
+}
+.border-t-lv5 {
+  border-top: 6px solid #dc2626;
+}
+
+.card-humid {
+  background: var(--humid-grad);
+  border-top: 6px solid #6366f1;
+}
+.card-temp {
+  background: var(--temp-grad);
+  border-top: 6px solid #f97316;
+}
+.card-energy {
+  background: var(--energy-grad);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+}
+.card-carbon {
+  background: var(--carbon-grad);
+  border-left: 12px solid #10b981;
+}
+.card-unit {
+  background: var(--unit-grad);
+  border-left: 12px solid #0ea5e9;
+}
+
+.iron-animation {
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.thaipbs-accent {
+  color: #f37021;
+}
+
+/* Fluid Scaling */
+.main-pm25-val {
+  font-size: clamp(8rem, 20vmin, 13rem);
+}
+.metric-val {
+  font-size: clamp(3rem, 10vmin, 5.3rem);
+}
+.energy-val {
+  font-size: clamp(4rem, 12vmin, 6.5rem);
+}
+
+.logo-box {
+  width: clamp(48px, 8vmin, 64px);
+  height: clamp(48px, 8vmin, 64px);
+  padding: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (max-height: 850px) and (min-width: 1024px) {
+  .dashboard-container {
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  .glass-card {
+    border-radius: 1.5rem;
+  }
+}
+
+.aqi-pill {
+  font-weight: 900;
+  border-radius: 9999px;
+  padding: 0.35rem 0.8rem;
+  font-size: clamp(0.75rem, 1vw, 1rem);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.aqi-progress {
+  height: 1rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.2);
+}
+
+/* ===== Fullscreen/จอสูง: ลดการยืดโซนล่าง และเพิ่มพื้นที่ให้โซนบน =====
+   ใช้เงื่อนไข min-height เพื่อให้ "ตอนไม่ fullscreen" ยังเหมือนเดิม */
+@media (min-width: 1024px) and (min-height: 900px) {
+  /* เปลี่ยนคอลัมน์ขวาจาก flex เป็น grid เฉพาะจอสูง */
+  #right-col {
+    display: grid !important;
+    grid-template-rows: 1fr 1fr; /* บนใหญ่ขึ้น / ล่างเล็กลง (ปรับได้) */
+    gap: 2rem;
+  }
+
+  /* ให้ 2 โซนยืดเต็มแถวของตัวเอง */
+  #top-metrics,
+  #bottom-metrics {
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* ลดความสูงที่โซนล่างเคยกินด้วย flex-1 (กันกรณียังเป็น flex ในบางเบราว์เซอร์) */
+  #bottom-metrics {
+    flex: 0 0 auto !important;
+  }
+
+  /* (ตัวเลือก) ลด padding โซนล่างนิดนึง เฉพาะ fullscreen เพื่อไม่ให้ "กล่องใหญ่" ดูยืด */
+  #bottom-metrics .card-energy {
+    padding: clamp(1.5rem, 2.2vmin, 2.5rem) !important;
+  }
+  #bottom-metrics .card-carbon,
+  #bottom-metrics .card-unit {
+    padding-top: clamp(1rem, 1.6vmin, 1.5rem) !important;
+    padding-bottom: clamp(1rem, 1.6vmin, 1.5rem) !important;
+  }
+}

@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Public Display Dashboard - Thai PBS @อาคารสำนักข่าว</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="Pm_dash.css" />
+
+    <style>
+      /* =========================================
+         1. รีเซ็ตพื้นฐาน + 🌟 ลูกเล่นออโรร่าพื้นหลัง
+         ========================================= */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Prompt", sans-serif;
+        background: linear-gradient(-45deg, #0f172a, #020617, #1e1b4b, #0f172a);
+        background-size: 400% 400%;
+        animation: ambientGlow 20s ease-in-out infinite;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        overflow: hidden !important;
+      }
+
+      @keyframes ambientGlow {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      @keyframes alertPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+        }
+        50% {
+          transform: scale(1.02);
+          box-shadow: 0 0 40px rgba(220, 38, 38, 0.8);
+        }
+      }
+
+      /* =========================================
+         2. โหมดทีวี / จอคอม (1024px ขึ้นไป)
+         ========================================= */
+      @media (min-width: 1024px) {
+        html {
+          font-size: min(calc(100vw / 120), calc(100vh / 67.5));
+        }
+        body {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        #main-wrapper {
+          width: 100vw !important;
+          height: 100vh !important;
+          max-width: 100vw !important;
+          position: relative;
+          background: transparent;
+          display: flex;
+          flex-direction: column;
+        }
+        .dashboard-container {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          width: 100vw !important;
+          max-width: 100vw !important;
+        }
+        .cm-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+        }
+        .footer-legend {
+          margin-bottom: 4.5rem !important;
+        }
+      }
+
+      /* =========================================
+         3. โหมดมือถือ / แท็บเล็ตแนวตั้ง (ต่ำกว่า 1024px)
+         ========================================= */
+      @media (max-width: 1023px) {
+        html {
+          font-size: 16px;
+        }
+        html,
+        body {
+          overflow-y: auto !important;
+          height: auto !important;
+        }
+        #main-wrapper {
+          width: 100% !important;
+          min-height: 100vh !important;
+          height: auto !important;
+          display: flex;
+          flex-direction: column;
+          background: transparent;
+        }
+        .dashboard-container {
+          padding-bottom: 90px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          width: 100% !important;
+        }
+        #mainView,
+        #right-col,
+        #top-metrics,
+        #bottom-metrics {
+          height: auto !important;
+          min-height: auto !important;
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 1.5rem !important;
+        }
+        .glass-card {
+          height: auto !important;
+          min-height: auto !important;
+        }
+        .graph-content-wrapper {
+          flex-direction: column !important;
+          gap: 1.5rem !important;
+        }
+        .graph-left-panel,
+        .graph-right-panel {
+          width: 100% !important;
+        }
+        .graph-svg-container {
+          min-height: 250px !important;
+        }
+        .graph-stats-container {
+          height: auto !important;
+          flex-wrap: wrap !important;
+        }
+        .cm-bar {
+          position: fixed;
+          padding: 0 15px;
+          justify-content: flex-start;
+          gap: 20px;
+          overflow-x: auto;
+          white-space: nowrap;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+        }
+        .footer-legend {
+          margin-bottom: 0 !important;
+        }
+      }
+
+      /* =========================================
+         4. ตกแต่งหน้าตาอื่นๆ
+         ========================================= */
+      .card-unit {
+        display: none !important;
+      }
+      .hidden-page {
+        display: none !important;
+      }
+      .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .cm-bar {
+        height: 4.5rem;
+        background: rgba(15, 23, 42, 0.95);
+        border-top: 0.25rem solid #ef4444;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15rem;
+        z-index: 9999;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        transform: translateY(0);
+        animation: none !important;
+      }
+      .cm-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .cm-label {
+        color: white;
+        font-weight: 700;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+      }
+      .indicator {
+        background: #ef4444;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+      }
+      .indicator-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        background: white;
+        border-radius: 50%;
+        animation: blink 1.5s infinite;
+      }
+      .cm-stats {
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+      }
+      .stat-item {
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+        color: #cbd5e1;
+        font-size: 1.1rem;
+      }
+      .cm-val-text {
+        color: #fff;
+        font-weight: 700;
+        font-size: 2rem;
+        line-height: 1;
+      }
+      .cm-unit {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #94a3b8;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .footer-legend {
+        height: auto !important;
+        flex-shrink: 0;
+      }
+
+      /* =========================================
+         🔴 5. ควบคุมขนาดความกว้างหน้าหลักและกราฟ
+         ========================================= */
+      #detailView,
+      #mainView {
+        width: 96vw !important;
+        max-width: 100vw !important;
+        margin: 0 auto !important;
+      }
+    </style>
+  </head>
+
+  <body data-theme="dark" data-city="hatyai-news">
+    <div
+      id="top-progress"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 999999;
+      "
+    >
+      <div
+        id="progress-bar-fill"
+        style="
+          height: 100%;
+          width: 0%;
+          background: #3b82f6;
+          box-shadow: 0 0 15px #3b82f6;
+        "
+      ></div>
+    </div>
+    <div id="main-wrapper">
+      <div class="dashboard-container">
+        <header
+          class="flex flex-col sm:flex-row justify-between items-center gap-4 px-4"
+        >
+          <div class="flex items-center gap-4 sm:gap-6">
+            <div
+              class="logo-box w-40 h-40 bg-white rounded-2xl shadow-xl flex items-center justify-center"
+            >
+              <img src="ThaiPbs.png" alt="Thai PBS" />
+            </div>
+            <div>
+              <h1
+                class="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[var(--text-main)]"
+              >
+                Thai PBS Hatyai
+                <span class="thaipbs-accent">@อาคารสำนักข่าว</span>
+              </h1>
+              <p
+                class="text-[var(--text-sub)] font-bold text-xs sm:text-lg lg:text-xl tracking-widest uppercase mt-1"
+              >
+                Energy Management Monitor
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div
+              class="bg-[var(--header-bg)] px-6 sm:px-10 py-3 sm:py-4 rounded-2xl sm:rounded-[2.5rem] border border-[var(--card-border)] shadow-2xl text-right"
+            >
+              <div
+                id="clock"
+                class="text-2xl sm:text-4xl lg:text-6xl font-black tracking-tighter text-[var(--clock-text)] font-mono leading-none"
+              >
+                00:00:00
+              </div>
+              <div
+                id="date"
+                class="text-[10px] sm:text-sm text-[var(--text-sub)] font-black uppercase tracking-[0.2em] mt-1 sm:mt-2"
+              >
+                LOADING...
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div
+          id="mainView"
+          class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 flex-1 min-h-0 fade-in"
+        >
+          <div class="lg:col-span-4 flex flex-col min-h-0">
+            <div
+              id="outdoor-card"
+              class="glass-card p-6 lg:p-12 transition-all duration-500"
+            >
+              <div class="flex justify-between items-start">
+                <div class="flex items-start gap-3">
+                  <i
+                    id="outdoor-icon"
+                    class="fa-solid fa-lungs text-2xl lg:text-3xl mt-1"
+                  ></i>
+                  <div
+                    class="font-black tracking-widest uppercase leading-tight"
+                  >
+                    <div class="text-lg lg:text-xl">PM2.5 ภายนอกอาคาร</div>
+                    <div
+                      class="text-xs lg:text-base text-[var(--text-sub)] font-bold tracking-[0.18em] mt-1"
+                    >
+                      บริเวณพื้นที่ THAI PBS
+                    </div>
+                  </div>
+                </div>
+                <div
+                  id="outdoor-status-pill"
+                  class="px-4 py-2 lg:px-8 lg:py-3 rounded-full font-black text-sm lg:text-2xl shadow-lg"
+                >
+                  --
+                </div>
+              </div>
+              <div
+                class="flex flex-col items-center lg:items-start gap-1 lg:gap-2 my-6"
+              >
+                <h2
+                  id="outdoor-val"
+                  class="main-pm25-val font-black leading-none tracking-tighter"
+                >
+                  0
+                </h2>
+                <span
+                  class="text-xl lg:text-4xl text-[var(--text-sub)] font-bold italic mt-[-10px] lg:mt-[-15px]"
+                  >µg/m³</span
+                >
+              </div>
+              <div class="mt-auto">
+                <div class="aqi-progress w-full mb-6 p-1">
+                  <div
+                    id="outdoor-progress-fill"
+                    class="h-full rounded-full shadow-lg transition-all duration-1000"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <div
+                  class="p-4 bg-black/20 rounded-2xl border border-white/10 backdrop-blur-md"
+                >
+                  <p
+                    id="outdoor-status-text"
+                    class="text-lg lg:text-3xl font-black"
+                  >
+                    --
+                  </p>
+                  <p
+                    id="outdoor-status-sub"
+                    class="text-sm lg:text-xl text-[var(--text-sub)] font-medium mt-2"
+                  >
+                    --
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="right-col"
+            class="lg:col-span-8 flex flex-col gap-6 lg:gap-8 min-h-0"
+          >
+            <div
+              id="top-metrics"
+              class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 min-h-0"
+            >
+              <div
+                id="indoor-card"
+                class="glass-card p-5 flex flex-col transition-all duration-500"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-start gap-3 min-w-0">
+                    <i
+                      id="indoor-icon-sm"
+                      class="fa-solid fa-lungs text-2xl mt-1"
+                    ></i>
+                    <div
+                      class="font-black tracking-widest uppercase leading-tight min-w-0"
+                    >
+                      <div class="text-sm lg:text-base">PM2.5</div>
+                      <div class="text-[10px] lg:text-sm opacity-70">
+                        ภายในอาคาร
+                      </div>
+                    </div>
+                  </div>
+                  <div id="indoor-status-pill" class="aqi-pill">--</div>
+                </div>
+                <div class="flex items-baseline gap-4 mt-3 justify-between">
+                  <div class="flex items-baseline gap-2">
+                    <span
+                      id="indoor-val"
+                      class="text-7xl lg:text-8xl font-black"
+                      >0</span
+                    >
+                    <span
+                      class="text-xs lg:text-lg text-[var(--text-sub)] font-bold italic"
+                      >µg/m³</span
+                    >
+                  </div>
+                  <i
+                    id="indoor-face"
+                    class="fa-solid fa-face-smile text-3xl lg:text-5xl opacity-80"
+                  ></i>
+                </div>
+                <div class="mt-auto pt-3">
+                  <div class="aqi-progress w-full mb-3 p-0.5">
+                    <div
+                      id="indoor-progress-fill"
+                      class="h-full rounded-full transition-all duration-1000"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-black/10">
+                    <p
+                      id="indoor-status-text"
+                      class="text-[10px] lg:text-sm font-black"
+                    >
+                      --
+                    </p>
+                    <p
+                      id="indoor-status-sub"
+                      class="text-xs lg:text-base text-[var(--text-sub)] mt-1"
+                    >
+                      --
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="glass-card card-humid p-6 lg:p-10">
+                <span
+                  class="text-[var(--text-sub)] font-black text-sm lg:text-lg mb-8 block"
+                  >ความชื้นสัมพัทธ์</span
+                >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-baseline">
+                    <span
+                      id="humid-val"
+                      class="metric-val text-7xl lg:text-8xl font-black"
+                      >--</span
+                    >
+                    <span
+                      class="text-xl lg:text-3xl text-[var(--text-sub)] ml-2 font-bold"
+                      >%</span
+                    >
+                  </div>
+                  <i
+                    class="fa-solid fa-droplet text-indigo-400 text-4xl lg:text-6xl opacity-80"
+                  ></i>
+                </div>
+              </div>
+              <div class="glass-card card-temp p-6 lg:p-10">
+                <span
+                  class="text-[var(--text-sub)] font-black text-sm lg:text-lg mb-8 block"
+                  >อุณหภูมิอากาศ</span
+                >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-baseline">
+                    <span
+                      id="temp-val"
+                      class="metric-val text-7xl lg:text-8xl font-black"
+                      >--</span
+                    >
+                    <span
+                      class="text-xl lg:text-3xl text-[var(--text-sub)] ml-2 font-bold"
+                      >°C</span
+                    >
+                  </div>
+                  <i
+                    class="fa-solid fa-temperature-high text-orange-500 text-4xl lg:text-6xl opacity-80"
+                  ></i>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="bottom-metrics"
+              class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 flex-1 min-h-0"
+            >
+              <div class="lg:col-span-8 glass-card card-energy p-6 lg:p-12">
+                <div
+                  class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full"
+                >
+                  <div class="md:border-r border-white/10 md:pr-12">
+                    <div
+                      class="flex items-center gap-3 text-blue-400 font-black text-sm lg:text-lg mb-4"
+                    >
+                      <span
+                        class="flex h-3 w-3 rounded-full bg-blue-500 animate-ping"
+                      ></span>
+                      กำลังไฟฟ้าขณะนี้
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                      <span
+                        id="energy-val"
+                        class="energy-val text-7xl lg:text-8xl font-black text-white"
+                        >--</span
+                      >
+                      <span class="text-xl lg:text-4xl text-blue-400 font-black"
+                        >kW</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-col md:items-center justify-center text-left md:text-center"
+                  >
+                    <div
+                      class="flex items-center gap-3 text-sky-400 font-black text-sm lg:text-lg mb-4"
+                    >
+                      <i class="fa-solid fa-plug-circle-bolt text-xl"></i>
+                      หน่วยไฟฟ้าที่ใช้ไปวันนี้
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                      <span
+                        id="daily-energy-val"
+                        class="text-6xl lg:text-8xl font-black text-white"
+                        >--</span
+                      >
+                      <span class="text-xl lg:text-4xl text-sky-400 font-black"
+                        >หน่วย</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+               <div class="lg:col-span-4 flex flex-col gap-6 lg:gap-8 min-h-0">
+                <div
+                  class="glass-card card-carbon flex-1 p-6 lg:p-10 flex flex-col justify-center"
+                >
+                  <span
+                    class="text-[var(--text-sub)] font-black text-sm lg:text-lg mb-4 block uppercase"
+                  >
+                    CARBON FOOTPRINT วันนี้
+                  </span>
+
+                  <span
+                    id="carbon-val"
+                    class="metric-val text-7xl lg:text-8xl font-black leading-none block"
+                  >
+                    0.0
+                  </span>
+
+                  <div class="flex items-end justify-between mt-4">
+                    <span
+                      class="text-xl lg:text-3xl text-[var(--text-sub)] font-bold mb-1"
+                    >
+                      kgCO₂e
+                    </span>
+                    <i
+                      class="fa-solid fa-leaf text-emerald-500 text-4xl lg:text-6xl opacity-80 flex-shrink-0"
+                    ></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="detailView"
+          class="hidden-page fade-in flex-1 min-h-0 flex flex-col justify-center"
+          style="display: none"
+        ></div>
+
+        <footer
+          class="footer-legend glass-card mt-auto px-6 lg:px-10 py-6 lg:py-7 flex flex-col xl:flex-row items-center gap-4 lg:gap-8 bg-[var(--header-bg)]"
+        >
+          <h3
+            class="font-black text-sm lg:text-lg uppercase whitespace-nowrap tracking-tighter"
+          >
+            เกณฑ์ PM 2.5
+          </h3>
+          <div
+            class="w-full flex-1 flex flex-wrap gap-2 lg:gap-4 h-auto lg:h-14"
+          >
+            <div
+              class="flex-1 min-w-[80px] bg-blue-600 rounded-xl flex items-center justify-center text-white text-[10px] lg:text-base font-black shadow-xl p-2"
+            >
+              ดีมาก (0-15)
+            </div>
+            <div
+              class="flex-1 min-w-[80px] bg-emerald-600 rounded-xl flex items-center justify-center text-white text-[10px] lg:text-base font-black shadow-xl p-2"
+            >
+              ดี (15-25)
+            </div>
+            <div
+              class="flex-1 min-w-[80px] bg-yellow-500 rounded-xl flex items-center justify-center text-slate-950 text-[10px] lg:text-base font-black p-2"
+            >
+              ปานกลาง (25-37)
+            </div>
+            <div
+              class="flex-1 min-w-[80px] bg-orange-600 rounded-xl flex items-center justify-center text-white text-[10px] lg:text-base font-black shadow-xl p-2"
+            >
+              เริ่มมีผล (37-75)
+            </div>
+            <div
+              class="flex-1 min-w-[80px] bg-red-600 rounded-xl flex items-center justify-center text-white text-[10px] lg:text-base font-black shadow-xl p-2"
+            >
+              มีผลกระทบ (>75)
+            </div>
+          </div>
+        </footer>
+      </div>
+
+      <div id="cm-news-bar" class="cm-bar">
+        <div class="stat-item">
+          <i class="fa-solid fa-house-user text-blue-400"></i
+          ><span class="cm-unit">IN:</span
+          ><span id="cm-pm25-in" class="cm-val-text">--</span
+          ><span class="cm-unit">µg/m³</span>
+        </div>
+        <div class="stat-item">
+          <i class="fa-solid fa-tree text-emerald-400"></i
+          ><span class="cm-unit">OUT:</span
+          ><span id="cm-pm25-out" class="cm-val-text">--</span
+          ><span class="cm-unit">µg/m³</span>
+        </div>
+        <div class="stat-item">
+          <i class="fa-solid fa-temperature-half stat-icon text-orange-400"></i
+          ><span class="cm-unit">Temp:</span
+          ><span id="cm-temp" class="cm-val-text">--</span
+          ><span class="cm-unit">°C</span>
+        </div>
+        <div class="stat-item">
+          <i class="fa-solid fa-droplet stat-icon text-blue-400"></i
+          ><span class="cm-unit">Humi:</span
+          ><span id="cm-humi" class="cm-val-text">--</span
+          ><span class="cm-unit">%</span>
+        </div>
+        <div class="stat-item">
+          <i class="fa-solid fa-bolt stat-icon text-yellow-400"></i
+          ><span class="cm-unit">Power:</span
+          ><span id="cm-energy-val" class="cm-val-text">--</span
+          ><span class="cm-unit">kW</span>
+        </div>
+        <div class="stat-item">
+          <i class="fa-solid fa-leaf stat-icon text-emerald-500"></i
+          ><span class="cm-unit">CO₂e:</span
+          ><span id="cm-carbon-val" class="cm-val-text">--</span
+          ><span class="cm-unit">kg</span>
+        </div>
+      </div>
+    </div>
+
+    <script src="Pm_dash.js?v=20260311c"></script>
+  </body>
+</html>
